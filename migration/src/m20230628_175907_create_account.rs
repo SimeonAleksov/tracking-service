@@ -20,6 +20,8 @@ impl MigrationTrait for Migration {
                             .primary_key(),
                     )
                     .col(ColumnDef::new(Account::ExternalId).uuid().extra("DEFAULT gen_random_uuid()".to_string()).not_null())
+                    .col(ColumnDef::new(Account::FirstName).string().not_null())
+                    .col(ColumnDef::new(Account::LastName).string().not_null())
                     .col(ColumnDef::new(Account::IsActive).boolean().not_null())
                     .col(ColumnDef::new(Account::Created).date_time().extra("DEFAULT now()".to_string()).not_null())
                     .to_owned(),
@@ -35,6 +37,7 @@ impl MigrationTrait for Migration {
                     .to_owned(),
             )
             .await?;
+
         Ok(())
     }
 
@@ -54,6 +57,8 @@ enum Account {
     Table,
     Id,
     ExternalId,
+    FirstName,
+    LastName,
     IsActive,
     Created,
 }
