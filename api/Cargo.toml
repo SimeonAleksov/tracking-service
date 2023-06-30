@@ -9,6 +9,7 @@ edition = "2021"
 service = { path = "../service"}
 migration = { path = "../migration"}
 entity = {path = "../entity"}
+kafka_producer = {path = "../kafka_producer"}
 actix = "0.13.0"
 futures = "0.3.28"
 serde = { version = "1.0.164", features = ["derive"] }

@@ -5,6 +5,8 @@ use service::{
 use migration::{
     Migrator, MigratorTrait
 };
+
+
 use actix_web::{middleware, web, App, HttpServer, HttpResponse, Error, post};
 
 use listenfd::ListenFd;
@@ -37,8 +39,8 @@ async fn accounts(data: web::Data<AppState>, id: web::Path<String>) -> Result<Ht
 
 #[actix_web::main]
 async fn start() -> std::io::Result<()> {
-    std::env::set_var("RUST_LOG", "debug");
-    std::env::set_var("RUST_BACKTRACE", "full");
+    env::set_var("RUST_LOG", "debug");
+    env::set_var("RUST_BACKTRACE", "full");
     env_logger::init();
 
     dotenvy::dotenv().ok();
