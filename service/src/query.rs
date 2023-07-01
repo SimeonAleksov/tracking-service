@@ -1,13 +1,13 @@
 use ::entity::{account, account::Entity as Account};
 use sea_orm::*;
 use serde_json;
-use uuid::{Uuid};
+use uuid::Uuid;
 
 
 pub struct Query;
 
 impl Query {
-    pub async fn find_accounts_by_id(db: &DbConn, id: String) -> Option<serde_json::value::Value> {
+    pub async fn find_accounts_by_id(db: &DbConn, id: &str) -> Option<serde_json::value::Value> {
         let external_id = Uuid::parse_str(&*id.to_string()).unwrap();
         Account::find()
             .select_only()

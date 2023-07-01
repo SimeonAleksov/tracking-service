@@ -5,6 +5,7 @@ use service::{
 use migration::{
     Migrator, MigratorTrait
 };
+use kafka_producer::produce;
 
 
 use actix_web::{middleware, web, App, HttpServer, HttpResponse, Error, post};
@@ -28,7 +29,12 @@ async fn accounts(data: web::Data<AppState>, id: web::Path<String>) -> Result<Ht
     let conn = &data.conn;
     let id = id.into_inner();
 
-    let account = Query::find_accounts_by_id(conn, id).await;
+    let account = Query::find_accounts_by_id(conn, &id).await;
+
+    let hosts = vec![ "127.0.0.1:9092".to_owned() ];
+    let mut client = produce::KafkaClient::new(hosts);
+    client.produce(&account).await;
+
 
     Ok(HttpResponse::Ok()
         .content_type(ContentType::json())
