@@ -34,7 +34,6 @@ async fn accounts(data: web::Data<AppState>, id: web::Path<String>) -> Result<Ht
     let kafka_host = env::var("KAFKA_HOST").expect("KAFKA_HOST is not set in .env file");
     let kafka_port = env::var("KAFKA_PORT").expect("KAFKA_PORT is not set in .env file");
     let kafka_url = format!("{kafka_host}:{kafka_port}");
-    println!("Connecting to kafka at {kafka_url}");
 
     let hosts = vec![ kafka_url.to_owned() ];
     let mut client = produce::KafkaClient::new(hosts);

@@ -11,4 +11,4 @@ RUN apt-get update && apt-get install -y \
 RUN cargo install --path .
 
 EXPOSE 8000
-CMD /usr/src/tracking-app/target/debug/tracking
+CMD /usr/src/tracking-app/target/release/tracking
