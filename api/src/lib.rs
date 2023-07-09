@@ -8,7 +8,7 @@ use migration::{
 use kafka_producer::produce;
 
 
-use actix_web::{middleware, web, App, HttpServer, HttpResponse, Error, post};
+use actix_web::{middleware, web, App, HttpServer, HttpResponse, Error, post, get};
 
 use listenfd::ListenFd;
 use std::env;
@@ -31,7 +31,12 @@ async fn accounts(data: web::Data<AppState>, id: web::Path<String>) -> Result<Ht
 
     let account = Query::find_accounts_by_id(conn, &id).await;
 
-    let hosts = vec![ "127.0.0.1:9092".to_owned() ];
+    let kafka_host = env::var("KAFKA_HOST").expect("KAFKA_HOST is not set in .env file");
+    let kafka_port = env::var("KAFKA_PORT").expect("KAFKA_PORT is not set in .env file");
+    let kafka_url = format!("{kafka_host}:{kafka_port}");
+    println!("Connecting to kafka at {kafka_url}");
+
+    let hosts = vec![ kafka_url.to_owned() ];
     let mut client = produce::KafkaClient::new(hosts);
     client.produce(&account).await;
 
@@ -43,6 +48,15 @@ async fn accounts(data: web::Data<AppState>, id: web::Path<String>) -> Result<Ht
 }
 
 
+#[get("/healthcheck")]
+async fn healthcheck() -> Result<HttpResponse, Error> {
+    Ok(HttpResponse::Ok()
+        .content_type(ContentType::json())
+        .json(())
+    )
+}
+
+
 #[actix_web::main]
 async fn start() -> std::io::Result<()> {
     env::set_var("RUST_LOG", "debug");
@@ -50,7 +64,7 @@ async fn start() -> std::io::Result<()> {
     env_logger::init();
 
     dotenvy::dotenv().ok();
-    let db_url = "postgresql://debug:debug@localhost:5432/tracking";
+    let db_url = "postgresql://debug:debug@postgres:5432/tracking";
     let host = env::var("HOST").expect("HOST is not set in .env file");
     let port = env::var("PORT").expect("PORT is not set in .env file");
     let server_url = format!("{host}:{port}");
@@ -80,6 +94,7 @@ async fn start() -> std::io::Result<()> {
 }
 
 fn init(cfg: &mut web::ServiceConfig) {
+    cfg.service(healthcheck);
     cfg.service(accounts);
 }
 
