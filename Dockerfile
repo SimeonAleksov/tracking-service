@@ -1,5 +1,7 @@
 FROM rust as build
 
+LABEL maintainer="Simeon Aleksov <aleksov_s@outlook.com>"
+
 WORKDIR /usr/src/tracking-app
 COPY . .
 
